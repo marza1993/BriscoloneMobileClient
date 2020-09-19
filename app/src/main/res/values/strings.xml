@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Prima app</string>
+    <string name="btnGioca">Gioca!</string>
+    <string name="lblNome">nome:</string>
+    <string name="lblIP">IP:</string>
+    <string name="lblServer">server:</string>
+    <string name="btnChiama">Chiama</string>
+    <string name="btnLascia">Lascia</string>
+    <string name="lblChiama">Chiama carta:</string>
+    <string name="lblPunteggioMin">Punteggio min vittoria:</string>
+    <string name="btnGiocaCarta">Gioca carta</string>
+    <string name="lblSemeCartaChiamata">Seme della carta chiamata:</string>
+    <string name="btnSceltaSeme">Conferma seme</string>
+    <string name="btnEffettuaChiamata">Chiama!</string>
+</resources>

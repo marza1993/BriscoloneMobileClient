@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/tavolo"
+    tools:context=".view.MainActivity">
+
+    <ImageView
+        android:id="@+id/imgStart"
+        android:layout_width="149dp"
+        android:layout_height="300dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.377"
+        app:srcCompat="@drawable/start" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="489dp"
+        android:layout_height="325dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:background="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/imgStart"
+        app:layout_constraintStart_toEndOf="@+id/imgStart"
+        app:layout_constraintTop_toTopOf="@+id/imgStart" />
+
+    <Button
+        android:id="@+id/btnGioca"
+        android:layout_width="127dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginRight="56dp"
+        android:layout_marginBottom="76dp"
+        android:background="#FFE5AE"
+        android:onClick="onBtnGiocaClick"
+        android:text="@string/btnGioca"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/lblNome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/lblNome"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <EditText
+        android:id="@+id/txtNome"
+        android:layout_width="140dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:background="@android:color/background_light"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/lblNome"
+        app:layout_constraintTop_toTopOf="@+id/lblNome" />
+
+    <TextView
+        android:id="@+id/lblIP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/lblIP"
+        app:layout_constraintStart_toStartOf="@+id/lblNome"
+        app:layout_constraintTop_toBottomOf="@+id/lblNome" />
+
+    <EditText
+        android:id="@+id/txtIP"
+        android:layout_width="140dp"
+        android:layout_height="24dp"
+        android:background="@android:color/background_light"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="@+id/txtNome"
+        app:layout_constraintTop_toTopOf="@+id/lblIP" />
+
+    <TextView
+        android:id="@+id/lblServer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/lblServer"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/lblIP"
+        app:layout_constraintTop_toBottomOf="@+id/lblIP" />
+
+    <EditText
+        android:id="@+id/txtIP2"
+        android:layout_width="140dp"
+        android:layout_height="24dp"
+        android:background="@android:color/background_light"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/txtIP"
+        app:layout_constraintTop_toTopOf="@+id/lblServer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
