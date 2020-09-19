@@ -405,14 +405,5 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/btnMena"
-        android:layout_width="129dp"
-        android:layout_height="84dp"
-        android:onClick="btnMena_click"
-        android:text="mena"
-        tools:layout_editor_absoluteX="586dp"
-        tools:layout_editor_absoluteY="205dp" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

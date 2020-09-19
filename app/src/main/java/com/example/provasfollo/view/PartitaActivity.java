@@ -142,14 +142,10 @@ public class PartitaActivity extends AppCompatActivity {
         serverListener.setIP_porta(IP, 11000);
         serverListener.addOggettoRemoto(giocatoreController.NOME_CLASSE, giocatoreController);
         serverListener.addOggettoRemoto(statoController.NOME_CLASSE, statoController);
-        // eseguo in bg
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                serverListener.execute("");
-            }
-        });
 
+
+        // eseguo in bg
+        Thread t = new Thread(serverListener);
         t.start();
 
 
@@ -168,19 +164,6 @@ public class PartitaActivity extends AppCompatActivity {
 
         handler = new Handler(this.getMainLooper());
 
-    }
-
-    public void btnMena_click(View view){
-
-        Button btnMena = (Button) findViewById(R.id.btnMena);
-        if(((String)btnMena.getText()).equalsIgnoreCase("mena")){
-            btnMena.setBackgroundColor(Color.MAGENTA);
-            btnMena.setText("robe");
-        }
-        else{
-            btnMena.setBackgroundColor(Color.CYAN);
-            btnMena.setText("mena");
-        }
     }
 
 

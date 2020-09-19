@@ -5,6 +5,13 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.Xml;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.HashMap;
 
 import com.example.provasfollo.controller.GiocatoreController;
@@ -16,14 +23,11 @@ import com.google.gson.internal.LinkedTreeMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
-public class RemoteCallDispatcher extends AsyncTask<String, String, TcpClient> {
+public class RemoteCallDispatcher implements Runnable {
 
     // riferimento all'unica istanza singleton
     private static RemoteCallDispatcher instance = null;
 
-
-    // oggetto per la connessione tcp
-    private TcpClient tcpClient;
 
     private String IP = "";
     private int porta = -1;
@@ -48,14 +52,16 @@ public class RemoteCallDispatcher extends AsyncTask<String, String, TcpClient> {
 
     private final static String TAG = "RemoteCallDispatcher";
 
-    private RemoteCallDispatcher(){
+    private Socket tcpClient = null;
 
-    }
+    private boolean mRun = false;
+    // used to send messages
+    private PrintWriter mBufferOut;
+    // used to read messages from the server
+    private BufferedReader mBufferIn;
 
-    public void setIP_porta(String IP, int porta){
-        this.IP = IP;
-        this.porta = porta;
-    }
+    // message to send to the server
+    private String mServerMessage;
 
     public static RemoteCallDispatcher getInstance(){
         if(instance == null){
@@ -64,78 +70,114 @@ public class RemoteCallDispatcher extends AsyncTask<String, String, TcpClient> {
         return instance;
     }
 
-    public void addOggettoRemoto(String chiave, IRemoteCallable oggettoRemoto){
-        oggettiRemoti.put(chiave, oggettoRemoto);
-    }
 
-    public void sendMsgToServer(String msg){
-        if(tcpClient != null){
-            tcpClient.sendMessage(msg);
-        }
-        else{
-            Log.d("RemoteCallDispatcher", "il client tcp e' null");
-        }
+    private RemoteCallDispatcher(){
 
     }
 
-    public void stopClient(){
-        if (tcpClient != null) {
-            tcpClient.stopClient();
-        }
+
+    public void setIP_porta(String IP, int porta){
+        this.IP = IP;
+        this.porta = porta;
     }
 
     @Override
-    protected TcpClient doInBackground(String... message) {
+    public void run(){
+        connectToServer();
+        mRun = true;
+        riceviMsgRemoti();
+    }
 
-        //we create a TCPClient object
-        tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
-            @Override
-            //here the messageReceived method is implemented
-            public void messageReceived(String message) {
-                //this method calls the onProgressUpdate
-                publishProgress(message);
+
+    public void connectToServer(){
+
+        try{
+            //here you must put your computer's IP address.
+            InetAddress serverAddr = InetAddress.getByName(IP);
+
+            Log.d("TCP Client", "C: Connecting...");
+
+            //create a socket to make the connection with the server
+            tcpClient = new Socket(serverAddr, porta);
+        }
+        catch(Exception e){
+            Log.d(TAG, "socket exception, " + e.toString());
+        }
+
+        try{
+            //sends the message to the server
+            mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(tcpClient.getOutputStream())), true);
+
+            //receives the message which the server sends back
+            mBufferIn = new BufferedReader(new InputStreamReader(tcpClient.getInputStream()));
+
+        }
+        catch(Exception e){
+            Log.d(TAG, e.toString());
+        }
+
+    }
+
+    public void riceviMsgRemoti(){
+        try {
+
+            while(true){
+
+                mServerMessage = "";
+
+                //in this while the client listens for the messages sent by the server
+                while (mRun) {
+
+                    mServerMessage = mBufferIn.readLine();
+                    mServerMessage = mServerMessage.substring(mServerMessage.indexOf('{'));
+
+                    if (mServerMessage != null) {
+
+                        Log.d(TAG, "messaggio ricevuto dal server: " + mServerMessage);
+
+                        break;
+
+                    }
+
+                }
+
+                dispatchROC(mServerMessage);
+
+                String risp = getRispostaElab();
+
+                sendMessage(risp);
             }
-        });
 
-        tcpClient.setServerIp(IP, porta);
-        //tcpClient.setServerIp("127.0.0.1", 11000);
-        tcpClient.run();
+        } catch (Exception e) {
+            Log.e("TCP", "S: Error", e);
+        } finally {
+            //the socket must be closed. It is not possible to reconnect to this socket
+            // after it is closed, which means a new socket instance has to be created.
+            try{
+                tcpClient.close();
+            }
+            catch(Exception e){
+                Log.d(TAG, e.toString());
+            }
 
-        return null;
+        }
     }
 
-    @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
-
-/*        //response received from server
-        Log.d("test", "response " + values[0]);
-
-
-        String json = values[0];
-
-        //json = json.substring(0, json.length() - 1);
-
-        Gson gson = new Gson();
-        MainActivity.RemoteObjectCall roc = gson.fromJson(json, MainActivity.RemoteObjectCall.class);
-
-        //process server response here....
-
-        ((TextView) findViewById(R.id.txtRispServer)).setText(roc.nome + "; " + roc.numCorde);*/
-
-        if(Looper.myLooper() == Looper.getMainLooper()){
-            Log.d("RemoteCallDispatcher", "Sono nel thread UI");
-        }
-        else{
-            Log.d("RemoteCallDispatcher", "NON sono nel thread UI");
-        }
-
-        dispatchROC(values[0]);
-
-        String risp = getRispostaElab();
-        sendMsgToServer(risp);
+    public void sendMessage(final String message) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mBufferOut != null) {
+                    Log.d(TAG, "Sending: " + message);
+                    mBufferOut.println(message);
+                    mBufferOut.flush();
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
+
 
     private boolean dispatchROC(String jsonFromServer)
     {
@@ -152,6 +194,10 @@ public class RemoteCallDispatcher extends AsyncTask<String, String, TcpClient> {
         return false;
     }
 
+    public void addOggettoRemoto(String chiave, IRemoteCallable oggettoRemoto){
+        oggettiRemoti.put(chiave, oggettoRemoto);
+    }
+
 
     // converte il risultato dell'elbaroazione dei metodi remoti in un messaggio che può essere inviato dal TCPServer
     private String getRispostaElab()
@@ -166,5 +212,34 @@ public class RemoteCallDispatcher extends AsyncTask<String, String, TcpClient> {
         }
         return json;
     }
+
+
+
+
+
+    public void stopClient() {
+
+        mRun = false;
+
+        if (mBufferOut != null) {
+            mBufferOut.flush();
+            mBufferOut.close();
+        }
+        mBufferIn = null;
+        mBufferOut = null;
+        mServerMessage = null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
