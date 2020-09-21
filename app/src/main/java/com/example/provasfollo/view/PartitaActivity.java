@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.os.Bundle;
 import android.content.Intent;
@@ -98,7 +99,8 @@ public class PartitaActivity extends AppCompatActivity {
     private ConstraintLayout panelSeme;
     private Button btnEffettuaChiamata;
     private Button btnLascia;
-    private EditText numPunteggioVittoria;
+    //private EditText numPunteggioVittoria;
+    private NumberPicker numPunteggioVittoria;
     private Spinner comboCartaChiamata;
     private Spinner comboSemeChiamata;
     private TextView txtBriscola;
@@ -160,7 +162,7 @@ public class PartitaActivity extends AppCompatActivity {
         visualizzaNuovaPartita(false);
 
         // all'inizio il bottone per giocare la carta è disabilitato
-        //btnGiocaCarta.setEnabled(false); TODO
+        btnGiocaCarta.setEnabled(false);
 
         handler = new Handler(this.getMainLooper());
 
@@ -177,8 +179,10 @@ public class PartitaActivity extends AppCompatActivity {
         panelSeme = (ConstraintLayout) findViewById(R.id.panelSeme);
         btnEffettuaChiamata = (Button) findViewById(R.id.btnEffettuaChiamata);
         btnLascia = (Button) findViewById(R.id.btnLascia);
-        numPunteggioVittoria = (EditText) findViewById(R.id.numPunteggioVittoria);
-        numPunteggioVittoria.setFilters(new InputFilter[]{ new InputFilterMinMax(61, 120)});
+        numPunteggioVittoria = (NumberPicker) findViewById(R.id.numPunteggioVittoria);
+        numPunteggioVittoria.setMinValue(61);
+        numPunteggioVittoria.setMaxValue(120);
+        numPunteggioVittoria.setValue(61);
 
         comboCartaChiamata = (Spinner) findViewById(R.id.comboCartaChiamata);
         comboCartaChiamata.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -269,7 +273,7 @@ public class PartitaActivity extends AppCompatActivity {
             indiceCartaDaGiocare = -1;
 
             // disabilito il bottone per giocare la carta
-            //btnGiocaCarta.setEnabled(false); TODO
+            btnGiocaCarta.setEnabled(false);
             btnGiocaCarta.setBackgroundColor(Color.parseColor(ColoriCodificheMie.GrigioCodifica));
 
             // fine del turno: imposto a false il flag del turno corrente
@@ -295,7 +299,7 @@ public class PartitaActivity extends AppCompatActivity {
         else
         {
             // TODO verificare quale va bene
-            numPunteggioVittoria.setText(String.valueOf(((InputFilterMinMax) numPunteggioVittoria.getFilters()[0]).getMin()));
+            numPunteggioVittoria.setValue(numPunteggioVittoria.getMinValue());
             // numPunteggioVittoria.setText(((InputFilterMinMax) numPunteggioVittoria.getFilters()[0]).getMin());
             numPunteggioVittoria.setEnabled(false);
         }
@@ -314,14 +318,6 @@ public class PartitaActivity extends AppCompatActivity {
 
     }
 
-    // TODO eliminare
-/*    public void inviaMsg(View view){
-
-        EditText editText = (EditText) findViewById(R.id.txtCampo);
-        String nome = editText.getText().toString();
-        serverListener.sendMsgToServer(nome + "<EOF>");
-    }*/
-
 
     // TODO: spostare in vista Giocatore ?
     public void aggiungiCartaMano(final Carta c)
@@ -335,10 +331,6 @@ public class PartitaActivity extends AppCompatActivity {
                     visteCarteMano[indiceNextCartaMano].setCarta(c);
                     indiceNextCartaMano++;
                 }
-
-                btnEffettuaChiamata.setEnabled(true);
-                btnEffettuaChiamata.setBackgroundColor(Color.CYAN);
-
             }
         });
 
@@ -356,8 +348,7 @@ public class PartitaActivity extends AppCompatActivity {
                 // rendo visibile il pannello del turno attivo
                 // SetControlVisible(panelTurnoGiocatore, true);
 
-                //btnGiocaCarta.setBackgroundColor(Color.parseColor(ColoriCodificheMie.BeigeCodifica));
-                btnGiocaCarta.setBackgroundColor(Color.MAGENTA);
+                btnGiocaCarta.setBackgroundColor(Color.parseColor(ColoriCodificheMie.BeigeCodifica));
                 btnGiocaCarta.setEnabled(true);
             }
         });
@@ -429,7 +420,7 @@ public class PartitaActivity extends AppCompatActivity {
     public int getPunteggioVittoria()
     {
         // TODO è il numeric up-down
-        return Integer.parseInt(numPunteggioVittoria.getText().toString());
+        return numPunteggioVittoria.getValue();
     }
 
     public String getSemeCartaChiamata()
@@ -512,8 +503,7 @@ public class PartitaActivity extends AppCompatActivity {
                             // quindi devo aggiungerla alla lista delle carte da mettere
                             if (numeroCartaCorrente >= 9) {
                                 elementiDaTenereComboCartaChiamata.add((String) comboCartaChiamata.getAdapter().getItem(i));
-
-                                numPunteggioVittoria.setFilters(new InputFilter[]{new InputFilterMinMax(punteggioMinCorrente + 1, 120)});
+                                numPunteggioVittoria.setMinValue(punteggioMinCorrente + 1);
                             }
                         }
                     }

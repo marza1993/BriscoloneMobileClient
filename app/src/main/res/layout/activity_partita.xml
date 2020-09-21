@@ -369,14 +369,26 @@
                 app:layout_constraintStart_toEndOf="@+id/lblChiamaCarta"
                 app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta" />
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/numPunteggioVittoria"
                 android:layout_width="94dp"
                 android:layout_height="45dp"
                 android:ems="10"
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="@+id/comboCartaChiamata"
-                app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta2" />
+                app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta2" />-->
+            <NumberPicker
+                android:id="@+id/numPunteggioVittoria"
+                android:layout_width="56dp"
+                android:layout_height="47dp"
+                android:layout_marginTop="16dp"
+
+                android:layout_marginEnd="52dp"
+                android:layout_marginRight="52dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/lblChiamaCarta2"
+                app:layout_constraintTop_toBottomOf="@+id/comboCartaChiamata"></NumberPicker>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

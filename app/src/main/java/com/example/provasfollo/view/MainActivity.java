@@ -2,6 +2,7 @@ package com.example.provasfollo.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.EditText;
 import android.content.Intent;
 
 import com.example.provasfollo.R;
+import com.example.provasfollo.utility.ConfigReaderWriter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,15 +18,23 @@ public class MainActivity extends AppCompatActivity {
     public final static String KEY_NOME = "nome";
     public final static String KEY_SERVER = "server";
 
+    public final static String NOME_PROPERTY = "nome";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((EditText)findViewById(R.id.txtIP)).setText("192.168.1.100");
-        //((EditText)findViewById(R.id.txtIP)).setText("10.227.220.207");
+        String nome = ConfigReaderWriter.getConfigValue(this, "nome");
+        if(!nome.equalsIgnoreCase("")){
+            ((EditText) findViewById(R.id.txtNome)).setText(nome);
+        }
+
+        ((EditText)findViewById(R.id.txtIP)).setText(getString(R.string.IP));
 
         Log.d("STATO", "on create chiamato!");
+
+
     }
 
 
@@ -37,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
         // ottengo il riferimento all'edit text
         String nome = ((EditText) findViewById(R.id.txtNome)).getText().toString();
+
+        String nomeConfig = ConfigReaderWriter.getConfigValue(this, NOME_PROPERTY);
+
+        if(!nome.equalsIgnoreCase(nomeConfig)){
+            ConfigReaderWriter.setConfigValue(this, NOME_PROPERTY, nome);
+        }
+
         String IP = ((EditText) findViewById(R.id.txtIP)).getText().toString();
         String server = ((EditText) findViewById(R.id.txtIP2)).getText().toString();
 
