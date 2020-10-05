@@ -130,8 +130,8 @@ public class VistaCarta
             {
                 // se la carta era già stata selezionata annullo la selezione
                 cartaSelezionata = false;
-                pictureBox.setLeft(this.left);
-                pictureBox.setTop(this.top);
+                pictureBox.setLeft(pictureBox.getLeft() + 20);
+                pictureBox.setTop(pictureBox.getTop() + 20);
 
                 // segnalo alla activity che la carta corrente non è più selezionata da giocare
                 parentActivity.selezionaDeselezionaCartaDaGiocare(indiceSlot);
@@ -151,8 +151,8 @@ public class VistaCarta
         {
             cartaSelezionata = false;
         }
-        pictureBox.setLeft(this.left);
-        pictureBox.setTop(this.top);
+        pictureBox.setLeft(pictureBox.getLeft() + 20);
+        pictureBox.setTop(pictureBox.getTop() + 20);
     }
 
 

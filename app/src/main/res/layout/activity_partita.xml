@@ -8,16 +8,24 @@
     tools:context=".view.PartitaActivity">
 
     <!-- pannello carte mano -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pannelloCarteMano"
-        android:layout_width="707dp"
-        android:layout_height="110dp"
-        android:layout_marginBottom="10dp"
+
+
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.98"
+        app:layout_constraintWidth_percent="0.98"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+
 
         <ImageView
             android:id="@+id/cartaMano0"
@@ -118,13 +126,15 @@
     <!-- pannello stato del turno -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/panelVincitoreTurno"
-        android:layout_width="116dp"
-        android:layout_height="200dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:background="#ACA8A8"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pannelloChiamata">
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintTop_toTopOf="@+id/pannelloChiamata"
+        app:layout_constraintWidth_percent="0.16"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
 
         <TextView
             android:id="@+id/txtBriscola"
@@ -157,7 +167,7 @@
             android:layout_marginTop="10dp"
             android:background="#CCCACA"
             app:layout_constraintStart_toStartOf="@+id/txtStatoTurno"
-            app:layout_constraintTop_toBottomOf="@+id/txtStatoTurno" >
+            app:layout_constraintTop_toBottomOf="@+id/txtStatoTurno">
 
             <TextView
                 android:id="@+id/lblSemeCartaChiamata"
@@ -193,17 +203,22 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- pannello tavolo -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pannelloTavolo"
-        android:layout_width="585dp"
-        android:layout_height="270dp"
         android:background="@drawable/tavolo"
-        app:layout_constraintStart_toStartOf="@+id/pannelloChiamata"
-        app:layout_constraintTop_toTopOf="@+id/pannelloChiamata">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.01999998"
+        app:layout_constraintWidth_percent="0.8"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
 
         <ImageView
             android:id="@+id/cartaTavolo0"
@@ -318,56 +333,31 @@
     <!-- pannello chiamata carte (asta) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pannelloChiamata"
-        android:layout_width="585dp"
-        android:layout_height="270dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:background="#E4E4E4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintHorizontal_bias="0.09"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.01999998"
+        app:layout_constraintWidth_percent="0.8"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pnlInputChiamata"
-            android:layout_width="247dp"
-            android:layout_height="142dp"
             android:background="#A7A7A7"
             app:layout_constraintBottom_toBottomOf="@+id/pannelloChiamata"
             app:layout_constraintEnd_toEndOf="@+id/pannelloChiamata"
+            app:layout_constraintHeight_percent="0.5"
             app:layout_constraintStart_toStartOf="@+id/pannelloChiamata"
             app:layout_constraintTop_toTopOf="@+id/pannelloChiamata"
-            app:layout_constraintVertical_bias="0.32999998">
+            app:layout_constraintVertical_bias="0.32999998"
+            app:layout_constraintWidth_percent="0.9"
+            android:layout_width="0dp"
+            android:layout_height="0dp">
 
-            <TextView
-                android:id="@+id/lblChiamaCarta2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="Chiama carta:"
-                app:layout_constraintStart_toStartOf="@+id/lblChiamaCarta"
-                app:layout_constraintTop_toBottomOf="@+id/lblChiamaCarta" />
-
-
-            <TextView
-                android:id="@+id/lblChiamaCarta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
-                android:text="Chiama carta:"
-                app:layout_constraintStart_toStartOf="@+id/pnlInputChiamata"
-                app:layout_constraintTop_toTopOf="@+id/pnlInputChiamata" />
-
-            <Spinner
-                android:id="@+id/comboCartaChiamata"
-                android:layout_width="107dp"
-                android:layout_height="21dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:background="#FFFFFF"
-                app:layout_constraintStart_toEndOf="@+id/lblChiamaCarta"
-                app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta" />
 
             <!--<EditText
                 android:id="@+id/numPunteggioVittoria"
@@ -377,18 +367,49 @@
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="@+id/comboCartaChiamata"
                 app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta2" />-->
+
+            <TextView
+                android:id="@+id/lblChiamaCarta2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginLeft="28dp"
+                android:text="Chiama carta:"
+                app:layout_constraintStart_toEndOf="@+id/comboCartaChiamata"
+                app:layout_constraintTop_toTopOf="@+id/comboCartaChiamata" />
+
+            <TextView
+                android:id="@+id/lblChiamaCarta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="28dp"
+                android:text="Chiama carta:"
+                app:layout_constraintStart_toStartOf="@+id/pnlInputChiamata"
+                app:layout_constraintTop_toTopOf="@+id/pnlInputChiamata" />
+
+            <Spinner
+                android:id="@+id/comboCartaChiamata"
+                android:layout_width="107dp"
+                android:layout_height="21dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginLeft="28dp"
+                android:background="#FFFFFF"
+                app:layout_constraintStart_toEndOf="@+id/lblChiamaCarta"
+                app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta" />
+
             <NumberPicker
                 android:id="@+id/numPunteggioVittoria"
                 android:layout_width="56dp"
                 android:layout_height="47dp"
-                android:layout_marginTop="16dp"
 
                 android:layout_marginEnd="52dp"
                 android:layout_marginRight="52dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.698"
                 app:layout_constraintStart_toEndOf="@+id/lblChiamaCarta2"
-                app:layout_constraintTop_toBottomOf="@+id/comboCartaChiamata"></NumberPicker>
+                app:layout_constraintTop_toTopOf="@+id/lblChiamaCarta2"></NumberPicker>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

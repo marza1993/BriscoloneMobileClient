@@ -27,8 +27,8 @@ public class Giocatore
     // punteggio attuale del giocatore
     private int punteggio;
 
-    boolean isSocio = false;
-    boolean isChiamante = false;
+    private boolean isSocio = false;
+    private boolean isChiamante = false;
 
     private final String TAG = Giocatore.class.toString();
 
@@ -84,7 +84,7 @@ public class Giocatore
             // una carta sarà null, perchè è già in tavola
             if (c != null)
             {
-                if (c.getSeme() == seme)
+                if (c.getSeme().equalsIgnoreCase(seme))
                 {
                     c.setSemeBriscola();
                 }
@@ -92,7 +92,7 @@ public class Giocatore
         }
 
         // carta giocata
-        if (giocata.getSeme() == seme)
+        if (giocata.getSeme().equalsIgnoreCase(seme))
         {
             giocata.setSemeBriscola();
         }
@@ -106,8 +106,8 @@ public class Giocatore
         {
             if(c != null)
             {
-                if(c.getNome() == Carta.SCALA_CARTE_ASTA[indiceCartaChiamata] &&
-                        c.getSeme() == seme)
+                if(c.getNome().equalsIgnoreCase(Carta.SCALA_CARTE_ASTA[indiceCartaChiamata]) &&
+                        c.getSeme().equalsIgnoreCase(seme))
                 {
                     isSocio = true;
                     break;
@@ -116,8 +116,8 @@ public class Giocatore
         }
 
         // controllo quella in tavola
-        if (giocata.getNome() == Carta.SCALA_CARTE_ASTA[indiceCartaChiamata] &&
-                giocata.getSeme() == seme)
+        if (giocata.getNome().equalsIgnoreCase(Carta.SCALA_CARTE_ASTA[indiceCartaChiamata]) &&
+                giocata.getSeme().equalsIgnoreCase(seme))
         {
             isSocio = true;
         }
