@@ -11,7 +11,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
 import com.example.provasfollo.controller.GiocatoreController;
@@ -22,6 +26,7 @@ import com.google.gson.internal.LinkedTreeMap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.TimeoutException;
 
 public class RemoteCallDispatcher implements Runnable {
 
@@ -42,6 +47,7 @@ public class RemoteCallDispatcher implements Runnable {
     public static String data = null;
 
     public final String TERMINATORE_MSG = "<EOF>";
+    public final String PING_MSG = "<PING>";
 
 
     // dictionary con coppie del tipo <"nome oggetto" , oggetto>
@@ -83,25 +89,31 @@ public class RemoteCallDispatcher implements Runnable {
 
     @Override
     public void run(){
-        connectToServer();
         mRun = true;
         riceviMsgRemoti();
     }
 
 
-    public void connectToServer(){
+    public void connectToServer() throws SocketTimeoutException, Exception {
 
         try{
             //here you must put your computer's IP address.
-            InetAddress serverAddr = InetAddress.getByName(IP);
+            InetSocketAddress serverAddr = new InetSocketAddress(IP, porta);
 
             Log.d("TCP Client", "C: Connecting...");
 
             //create a socket to make the connection with the server
-            tcpClient = new Socket(serverAddr, porta);
+            tcpClient = new Socket();
+
+            tcpClient.connect(serverAddr, 3000);
+        }
+        catch(SocketTimeoutException e){
+            Log.d(TAG, "socket timeout exception, " + e.toString());
+            throw e;
         }
         catch(Exception e){
             Log.d(TAG, "socket exception, " + e.toString());
+            throw e;
         }
 
         try{
@@ -129,16 +141,22 @@ public class RemoteCallDispatcher implements Runnable {
                 while (mRun) {
 
                     mServerMessage = mBufferIn.readLine();
-                    mServerMessage = mServerMessage.substring(mServerMessage.indexOf('{'));
+                    if(mServerMessage!=null){
+                        if(mServerMessage.contains(PING_MSG)){
+                            Log.d(TAG, "ricevuto: " + mServerMessage);
+                        }
+                        else{
+                            mServerMessage = mServerMessage.substring(mServerMessage.indexOf('{'));
 
-                    if (mServerMessage != null) {
+                            if (mServerMessage != null) {
 
-                        Log.d(TAG, "messaggio ricevuto dal server: " + mServerMessage);
+                                Log.d(TAG, "messaggio ricevuto dal server: " + mServerMessage);
 
-                        break;
+                                break;
 
+                            }
+                        }
                     }
-
                 }
 
                 dispatchROC(mServerMessage);

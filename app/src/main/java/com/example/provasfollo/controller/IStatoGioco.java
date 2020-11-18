@@ -32,6 +32,13 @@ public interface IStatoGioco
 
 
     /// <summary>
+    /// comunica a tutti i giocatori che è il turno del giocatore ID_giocatore
+    /// </summary>
+    /// <param name="ID_giocatore"></param>
+    void updateGiocatoreStaGiocando(int ID_giocatore);
+
+
+    /// <summary>
     /// segnala la fine della fase dell'asta, comunicando chi l'ha vinta, con quale carta e con che punteggio
     /// minimo per la vittoria
     /// </summary>

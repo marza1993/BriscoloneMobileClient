@@ -161,6 +161,17 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
         updateGiocatoreSceglieSeme(ID_giocatore);
     }
 
+    public void updateGiocatoreStaGiocando(int ID_giocatore)
+    {
+        view.updateGiocatoreStaGiocando(ID_giocatore);
+    }
+
+    public void updateGiocatoreStaGiocando(RemoteObject[] parametri)
+    {
+        int ID_giocatore = Integer.parseInt((String)((TipoSempliceROC)parametri[0].getValori()[0]).getVal());
+        updateGiocatoreStaGiocando(ID_giocatore);
+    }
+
     public void updateNuovaPartita()
     {
         // TODO vedere la roba dell'async (tutto il meccanismo dell'invoke)
@@ -236,6 +247,11 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
             case "updateGiocatoreSceglieSeme":
 
                 updateGiocatoreSceglieSeme(parametri);
+                return null;
+
+            case "updateGiocatoreStaGiocando":
+
+                updateGiocatoreStaGiocando(parametri);
                 return null;
 
             case "updateNuovaPartita":

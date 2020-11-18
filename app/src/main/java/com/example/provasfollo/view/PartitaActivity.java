@@ -28,6 +28,8 @@ import com.example.provasfollo.network.RemoteCallDispatcher;
 import com.example.provasfollo.controller.StatoGiocoController;
 import com.example.provasfollo.model.Carta;
 import com.example.provasfollo.model.Giocatore;
+import com.example.provasfollo.utility.MsgBoxOkCancel;
+
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class PartitaActivity extends AppCompatActivity {
@@ -132,16 +134,15 @@ public class PartitaActivity extends AppCompatActivity {
         String server = intent.getStringExtra(MainActivity.KEY_SERVER);
 
 
-
         // creo l'oggetto giocatore e il cotroller, e lo statocontroller
         Giocatore giocatore = new Giocatore(nome);
         giocatoreController = new GiocatoreController(this, giocatore);
         statoController = new StatoGiocoController(this, giocatoreController);
 
+
         // creo l'oggetto per la comunicazione in background con il server e gli aggiungo gli oggetti
         // a cui dovrà passare le chiamate remote
         serverListener = RemoteCallDispatcher.getInstance();
-        serverListener.setIP_porta(IP, 11000);
         serverListener.addOggettoRemoto(giocatoreController.NOME_CLASSE, giocatoreController);
         serverListener.addOggettoRemoto(statoController.NOME_CLASSE, statoController);
 
@@ -155,6 +156,7 @@ public class PartitaActivity extends AppCompatActivity {
         impostaOggettiGrafici();
 
 
+
         // carico e creo i vari pannelli
         caricaSlotManoGiocatore();
         caricaControlliChiamata();
@@ -164,8 +166,30 @@ public class PartitaActivity extends AppCompatActivity {
         // all'inizio il bottone per giocare la carta è disabilitato
         btnGiocaCarta.setEnabled(false);
 
+        txtStatoTurno.setText("Attesa giocatori...");
+
         handler = new Handler(this.getMainLooper());
 
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        Log.d(TAG, "sono nel resume!");
+
+    }
+
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        Log.d(TAG, "sono nel Pause!");
+    }
+
+    @Override
+    public void onBackPressed() {
+        // non fare nulla, in modo che non torni all'activity precedente
     }
 
 
@@ -201,6 +225,7 @@ public class PartitaActivity extends AppCompatActivity {
         comboSemeChiamata = (Spinner) findViewById(R.id.comboSemeChiamata);
         txtBriscola = (TextView) findViewById(R.id.txtBriscola);
         txtStatoTurno = (TextView) findViewById(R.id.txtStatoTurno);
+
     }
 
     // rende visibile il pannello per la chiamata iniziale delle briscole e nasconde il pannello del tavolo
@@ -328,8 +353,12 @@ public class PartitaActivity extends AppCompatActivity {
             public void run(){
                 if (indiceNextCartaMano < NUM_MAX_CARTE_MANO)
                 {
+                    if(indiceNextCartaMano == 0){
+                        txtStatoTurno.setText("Asta");
+                    }
                     visteCarteMano[indiceNextCartaMano].setCarta(c);
                     indiceNextCartaMano++;
+
                 }
             }
         });
@@ -449,7 +478,7 @@ public class PartitaActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtBriscola.setText("BRISCOLA" + seme);
+                txtBriscola.setText("BRISCOLA: \n" + seme);
                 txtBriscola.setVisibility(View.VISIBLE);
                 txtBriscola.bringToFront();
                 panelSeme.setVisibility(View.INVISIBLE);
@@ -509,7 +538,6 @@ public class PartitaActivity extends AppCompatActivity {
                     }
                 }
 
-                // TODO verificare la solita roba dell'invoke
                 MyGraphicsUtility.addItemsSpinner(comboCartaChiamata, elementiDaTenereComboCartaChiamata, partitaActivity);
                 comboCartaChiamata.setSelection(0);
                 comboCartaChiamata.invalidate();
@@ -600,11 +628,10 @@ public class PartitaActivity extends AppCompatActivity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String msg = "uno o più giocatori ha interrotto la partita! L'applicazione verrà chiusa.";
 
-                // TODO msgbox
-                Log.d(TAG, msg);
-                partitaActivity.finish();
+                Log.d(TAG, "Uno o più giocatori sconnessi! Attesa rientro...");
+                MsgBoxOkCancel msgBox = new MsgBoxOkCancel(getString(R.string.erroreGiocatoreSconnesso), getString(R.string.msgOk));
+                msgBox.show(getSupportFragmentManager(), TAG);
 
             }
         });
@@ -663,6 +690,23 @@ public class PartitaActivity extends AppCompatActivity {
 
     }
 
+    public void updateGiocatoreStaGiocando(final int ID_GicoatoreChiamante)
+    {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (VistaGiocatore g : visteGiocatori)
+                {
+                    // trovo il giocatore con l'ID passato
+                    if (g.getIDGiocatore() == ID_GicoatoreChiamante)
+                    {
+                        txtStatoTurno.setText("Turno del giocatore " + g.getNomeGiocatore());
+                    }
+                }
+            }
+        });
+
+    }
 
 
     public void caricaControlliChiamata()
