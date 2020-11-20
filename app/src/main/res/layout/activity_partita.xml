@@ -110,20 +110,21 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- pannello stato del turno -->
+
     <Button
         android:id="@+id/btnGiocaCarta"
-        android:layout_width="116dp"
-        android:layout_height="58dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
         android:background="#FFE5AE"
         android:enabled="true"
         android:onClick="btnGiocaCarta_click"
         android:text="@string/btnGiocaCarta"
-        app:layout_constraintBottom_toBottomOf="@+id/pannelloChiamata"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/panelVincitoreTurno"
+        app:layout_constraintStart_toStartOf="@+id/panelVincitoreTurno"
+        app:layout_constraintTop_toBottomOf="@+id/panelVincitoreTurno" />
 
-    <!-- pannello stato del turno -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/panelVincitoreTurno"
         android:layout_marginEnd="10dp"

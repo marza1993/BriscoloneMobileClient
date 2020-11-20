@@ -196,6 +196,7 @@ public class PartitaActivity extends AppCompatActivity {
     private void impostaOggettiGrafici(){
         // assegno tutti gli oggetti della activity, per averli sempre a disposizione
         btnGiocaCarta = (Button) findViewById(R.id.btnGiocaCarta);
+        btnGiocaCarta.setBackgroundColor(Color.parseColor(ColoriCodificheMie.GrigioCodifica));
         pannelloChiamata = (ConstraintLayout) findViewById(R.id.pannelloChiamata);
         pannelloTavolo = (ConstraintLayout) findViewById(R.id.pannelloTavolo);
         panelVincitoreTurno = (ConstraintLayout) findViewById(R.id.panelVincitoreTurno);
@@ -378,7 +379,7 @@ public class PartitaActivity extends AppCompatActivity {
                 // SetControlVisible(panelTurnoGiocatore, true);
 
                 btnGiocaCarta.setBackgroundColor(Color.parseColor(ColoriCodificheMie.BeigeCodifica));
-                btnGiocaCarta.setEnabled(true);
+                // btnGiocaCarta.setEnabled(true);
             }
         });
     }
@@ -581,6 +582,7 @@ public class PartitaActivity extends AppCompatActivity {
                                 "Il giocatore " + g.getNomeGiocatore() + " ha vinto l'asta, " +
                                         "chiamando la carta: " + SCALA_CARTE_ASTA[indiceCarta] +
                                         (indiceCarta == 9 ? "\nPunteggio vittoria: " + String.valueOf(punteggioVittoria) : ""));
+
                     }
                 }
             }
@@ -667,6 +669,11 @@ public class PartitaActivity extends AppCompatActivity {
 
                 // TODO msgBox
                 Log.d(TAG, messaggioFinePartita);
+
+
+                MsgBoxOkCancel msgBox = new MsgBoxOkCancel(messaggioFinePartita, getString(R.string.msgOk));
+                msgBox.show(getSupportFragmentManager(), TAG);
+
             }
         });
     }
@@ -800,7 +807,6 @@ public class PartitaActivity extends AppCompatActivity {
                         txtStatoTurno.setText("Il giocatore " + g.getNomeGiocatore() + " vince il turno e prende " + punteggioTurno + " punti!");
                         txtStatoTurno.setVisibility(View.VISIBLE);
                         txtStatoTurno.bringToFront();
-
                     }
                 }
             }

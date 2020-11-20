@@ -161,7 +161,7 @@ public class Carta implements IJsonType
                 "\"" + SEME + "\": \"" + seme + "\", " +
                 "\"" + NUMERO + "\": \"" + String.valueOf(numero) + "\", " +
                 "\"" + Id + "\": \"" + String.valueOf(ID) + "\", " +
-                "\"" + IS_SEME_BRISCOLA + "\": \"" + String.valueOf(isSemeBriscola) + "\", " +
+                "\"" + IS_SEME_BRISCOLA + "\": \"" + String.valueOf(isSemeBriscola) + "\"" +
                 " } ");
         return json.toString();
 

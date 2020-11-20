@@ -181,12 +181,12 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
     public void updateTurnoFinito(int ID_giocatoreVincente, int punteggioTurno)
     {
         view.mostraVincitoreTurno(ID_giocatoreVincente, punteggioTurno);
-        try{
+        /*try{
             Thread.sleep(5000);
         }
         catch(InterruptedException e){
             Log.d(NOME_CLASSE, e.toString());
-        }
+        }*/
 
         view.pulisciCarteTavolo();
     }
