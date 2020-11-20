@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         serverListener = RemoteCallDispatcher.getInstance();
 
         stato = 1;
+        // menate
     }
 
     @Override
