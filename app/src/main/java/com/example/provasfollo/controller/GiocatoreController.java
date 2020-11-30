@@ -253,6 +253,11 @@ public class GiocatoreController implements IGiocatore, IRemoteCallable
         giocatore.reset();
     }
 
+    public boolean vuoleIniziareNuovaPartita()
+    {
+        return view.vuoiGiocareNuovaPartita();
+    }
+
     public String toJson()
     {
         return giocatore.toJson();
@@ -372,6 +377,12 @@ public class GiocatoreController implements IGiocatore, IRemoteCallable
 
                 reset();
                 return null;
+
+            case "vuoleIniziarePartita":
+
+                valori = new IJsonType[1];
+                valori[0] = new TipoSempliceROC(vuoleIniziareNuovaPartita());
+                return new RemoteObject(boolean.class.getSimpleName(), true, false, valori);
 
             default:
 

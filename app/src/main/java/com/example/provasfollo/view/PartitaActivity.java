@@ -2,6 +2,7 @@ package com.example.provasfollo.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
@@ -22,13 +23,16 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.provasfollo.controller.GiocatoreController;
+import com.example.provasfollo.utility.IMsgBoxResponseCollector;
 import com.example.provasfollo.utility.MathUtility;
 import com.example.provasfollo.R;
 import com.example.provasfollo.network.RemoteCallDispatcher;
 import com.example.provasfollo.controller.StatoGiocoController;
 import com.example.provasfollo.model.Carta;
 import com.example.provasfollo.model.Giocatore;
+import com.example.provasfollo.utility.MsgBoxClickListenerWithNotify;
 import com.example.provasfollo.utility.MsgBoxOkCancel;
+import com.example.provasfollo.utility.MsgBoxWithWaitOnUIThread;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -642,40 +646,93 @@ public class PartitaActivity extends AppCompatActivity {
     }
 
 
+    public boolean vuoiGiocareNuovaPartita()
+    {
+/*        class MyRunnable implements Runnable, IMsgBoxResponseCollector {
+
+            private int response = -1; // -1 = None, 0 = no, 1 = sì
+
+            public void setResponseReceived(int response){
+                this.response = response;
+            }
+
+            @Override
+            public void run(){
+                MsgBoxOkCancel msgBox = new MsgBoxOkCancel(getString(R.string.msgGiocaAncora), getString(R.string.si), getString(R.string.no),
+                        new MsgBoxClickListenerWithNotify(this, 1),
+                        new MsgBoxClickListenerWithNotify(this, 0)
+                );
+
+                msgBox.show(getSupportFragmentManager(), TAG);
+            }
+
+            public int getResponse(){
+                return response;
+            }
+        }
+
+        MyRunnable r = new MyRunnable();
+        synchronized (r){
+            this.runOnUiThread(r);
+            try{
+                r.wait();
+            }
+            catch(InterruptedException e){
+                Log.d(TAG,e.toString());
+            }
+        }*/
+
+        MsgBoxWithWaitOnUIThread msgBox = new MsgBoxWithWaitOnUIThread(getString(R.string.msgGiocaAncora),
+                getString(R.string.si), getString(R.string.no), this);
+        msgBox.showAndWait();
+
+
+        if(msgBox.getResponse() == -1){
+            try{
+                throw new Exception("la risposta non è stata impsotata!");
+            }
+            catch(Exception e){
+                Log.d(TAG, e.toString());
+            }
+            return false;
+        }
+        else{
+            if(msgBox.getResponse() == 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
+    }
+
+
     public void mostraVincitoriPartita(final boolean vinceSquadraChiamante, final String nomeChiamante, final String nomeSocio,
                                        final String[] nomiPopolo, final int punteggioSquadraChiamante)
     {
 
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String messaggioFinePartita = "CHIAMANTE: " + nomeChiamante + ", \nSOCIO: " + nomeSocio + "\n";
-                messaggioFinePartita += "POPOLO: ";
-                for(int i = 0; i < nomiPopolo.length; i++)
-                {
-                    messaggioFinePartita += nomiPopolo[i];
-                    if(i < nomiPopolo.length - 1)
-                    {
-                        messaggioFinePartita += ", ";
-                    }
-                    else
-                    {
-                        messaggioFinePartita += "\n";
-                    }
-                }
-                messaggioFinePartita += "punti squadra chiamante: " + punteggioSquadraChiamante + "\n";
-                messaggioFinePartita += "punti squadra popolo: " + String.valueOf(120 - punteggioSquadraChiamante) + "\n";
-                messaggioFinePartita += "vince la squadra del " + (vinceSquadraChiamante ? "chiamante" : "popolo") + " !";
-
-                // TODO msgBox
-                Log.d(TAG, messaggioFinePartita);
-
-
-                MsgBoxOkCancel msgBox = new MsgBoxOkCancel(messaggioFinePartita, getString(R.string.msgOk));
-                msgBox.show(getSupportFragmentManager(), TAG);
-
+        String messaggioFinePartita = "CHIAMANTE: " + nomeChiamante + ", \nSOCIO: " + nomeSocio + "\n";
+        messaggioFinePartita += "POPOLO: ";
+        for(int i = 0; i < nomiPopolo.length; i++)
+        {
+            messaggioFinePartita += nomiPopolo[i];
+            if(i < nomiPopolo.length - 1)
+            {
+                messaggioFinePartita += ", ";
             }
-        });
+            else
+            {
+                messaggioFinePartita += "\n";
+            }
+        }
+        messaggioFinePartita += "punti squadra chiamante: " + punteggioSquadraChiamante + "\n";
+        messaggioFinePartita += "punti squadra popolo: " + String.valueOf(120 - punteggioSquadraChiamante) + "\n";
+        messaggioFinePartita += "vince la squadra del " + (vinceSquadraChiamante ? "chiamante" : "popolo") + " !";
+
+        MsgBoxWithWaitOnUIThread msgBox = new MsgBoxWithWaitOnUIThread(messaggioFinePartita, getString(R.string.msgOk), this);
+        msgBox.showAndWait();
+
     }
 
 
@@ -860,13 +917,32 @@ public class PartitaActivity extends AppCompatActivity {
         }
     }
 
+
+
+    public void updateContinuaPartiteSiNo(final boolean continua)
+    {
+        final AppCompatActivity partitaActivity = this;
+
+        String msg = continua ? getString(R.string.msgNuovaPartita) : getString(R.string.msgFinePartite);
+        MsgBoxWithWaitOnUIThread msgBox = new MsgBoxWithWaitOnUIThread(msg, getString(R.string.msgOk), this);
+        msgBox.showAndWait();
+
+        if(!continua) {
+            partitaActivity.finish();
+        }
+    }
+
+
     public Object getMonitorTurno(){
         return monitorTurno;
     }
 
     public void onDestroy(){
         super.onDestroy();
-        serverListener.stopClient();
+        serverListener.stop();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 

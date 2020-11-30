@@ -12,11 +12,17 @@
     <string name="lblSemeCartaChiamata">Seme della carta chiamata:</string>
     <string name="btnSceltaSeme">Conferma seme</string>
     <string name="btnEffettuaChiamata">Chiama!</string>
-    <!--<string name="IP">192.168.1.100</string>-->
-    <!--<string name="IP">marza1993.ddns.net</string>-->
-    <string name="IP">10.227.220.205</string>
+<!--    <string name="IP">192.168.1.100</string>-->
+<!--    <string name="IP">marza1993.ddns.net</string>-->
+    <string name="IP">10.227.220.216</string>
     <string name="erroreConnessione">Impossibile connettersi al server!</string>
     <string name="msgOk">ok</string>
     <string name="erroreGiocatoreSconnesso">Uno o più giocatori si sono sconnessi! Attesa rientro giocatori...</string>
+    <string name="msgGiocaAncora">Vuoi giocare una nuova partita?</string>
+    <string name="si">sì</string>
+    <string name="no">no</string>
+    <string name="msgNuovaPartita">Inizia una nuova partita!</string>
+    <string name="msgFinePartite">Uno o più giocatori non vuole continuare una nuova partita..\n
+        Torna alla schermata principale per attendere altri giocatori</string>
     <string name="preference_file_key">com.example.provasfollo.PREFERENCE_FILE_KEY</string>
 </resources>

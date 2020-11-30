@@ -49,4 +49,5 @@ public interface IGiocatore extends IJsonType
 
     void reset();
 
+    boolean vuoleIniziareNuovaPartita();
 }

@@ -69,6 +69,25 @@ public class RemoteCallDispatcher implements Runnable {
     // message to send to the server
     private String mServerMessage;
 
+    // flag per sapere se continuare a ricevere msg dal server
+    private boolean keepReceivingMsgs = false;
+
+    public synchronized boolean getKeepReceivingMSgThreadSafe(){
+        return keepReceivingMsgs;
+    }
+
+    public synchronized void setKeepReceivingMsgsThreadSafe(boolean newVal){
+        keepReceivingMsgs = newVal;
+    }
+
+    private synchronized boolean getMrunThreadSafe(){
+        return mRun;
+    }
+
+    private synchronized void setMrunThreadSafe(boolean newVal){
+        mRun = newVal;
+    }
+
     public static RemoteCallDispatcher getInstance(){
         if(instance == null){
             instance = new RemoteCallDispatcher();
@@ -89,7 +108,8 @@ public class RemoteCallDispatcher implements Runnable {
 
     @Override
     public void run(){
-        mRun = true;
+        setMrunThreadSafe(true);
+        setKeepReceivingMsgsThreadSafe(true);
         riceviMsgRemoti();
     }
 
@@ -133,12 +153,12 @@ public class RemoteCallDispatcher implements Runnable {
     public void riceviMsgRemoti(){
         try {
 
-            while(true){
+            while(getKeepReceivingMSgThreadSafe()){
 
                 mServerMessage = "";
 
                 //in this while the client listens for the messages sent by the server
-                while (mRun) {
+                while (getMrunThreadSafe()) {
 
                     mServerMessage = mBufferIn.readLine();
                     if(mServerMessage!=null){
@@ -159,6 +179,15 @@ public class RemoteCallDispatcher implements Runnable {
                     }
                 }
 
+//                // TODO: perchè serve un try qui? è già dentro
+//                try{
+//
+//                }
+//                catch(Exception e){
+//                    Log.d(TAG,"menate");
+//                    throw e;
+//                }
+
                 dispatchROC(mServerMessage);
 
                 String risp = getRispostaElab();
@@ -178,6 +207,13 @@ public class RemoteCallDispatcher implements Runnable {
                 Log.d(TAG, e.toString());
             }
 
+            if (mBufferOut != null) {
+                mBufferOut.flush();
+                mBufferOut.close();
+            }
+            mBufferIn = null;
+            mBufferOut = null;
+            mServerMessage = null;
         }
     }
 
@@ -232,20 +268,10 @@ public class RemoteCallDispatcher implements Runnable {
     }
 
 
+    public void stop() {
 
-
-
-    public void stopClient() {
-
-        mRun = false;
-
-        if (mBufferOut != null) {
-            mBufferOut.flush();
-            mBufferOut.close();
-        }
-        mBufferIn = null;
-        mBufferOut = null;
-        mServerMessage = null;
+        setKeepReceivingMsgsThreadSafe(false);
+        setMrunThreadSafe(false);
     }
 
 

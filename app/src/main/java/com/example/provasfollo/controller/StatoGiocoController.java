@@ -198,6 +198,18 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
         updateTurnoFinito(ID_giocatoreVincente, punteggioTurno);
     }
 
+    public void updateContinuaPartiteSiNo(RemoteObject[] parametri)
+    {
+        boolean continua = Boolean.parseBoolean((String)((TipoSempliceROC)parametri[0].getValori()[0]).getVal());
+        updateContinuaPartiteSiNo(continua);
+    }
+
+
+    public void updateContinuaPartiteSiNo(boolean continua)
+    {
+        view.updateContinuaPartiteSiNo(continua);
+    }
+
 
     public RemoteObject invokeMethodByName(String nomeMetodo, RemoteObject[] parametri)
     {
@@ -261,6 +273,11 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
             case "updateTurnoFinito":
 
                 updateTurnoFinito(parametri);
+                return null;
+
+            case "updateContinuaPartite":
+
+                updateContinuaPartiteSiNo(parametri);
                 return null;
 
             default:

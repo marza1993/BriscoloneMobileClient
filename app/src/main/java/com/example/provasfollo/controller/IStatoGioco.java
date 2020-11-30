@@ -81,4 +81,7 @@ public interface IStatoGioco
     // segnala che uno o più giocatori hanno abbandonato (chiuso l'app)
     void updateConnessioneInterrotta();
 
+
+    void updateContinuaPartiteSiNo(boolean continua);
+
 }
