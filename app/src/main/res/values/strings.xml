@@ -14,7 +14,7 @@
     <string name="btnEffettuaChiamata">Chiama!</string>
 <!--    <string name="IP">192.168.1.100</string>-->
 <!--    <string name="IP">marza1993.ddns.net</string>-->
-    <string name="IP">10.227.220.216</string>
+    <string name="IP">10.227.220.255</string>
     <string name="erroreConnessione">Impossibile connettersi al server!</string>
     <string name="msgOk">ok</string>
     <string name="erroreGiocatoreSconnesso">Uno o più giocatori si sono sconnessi! Attesa rientro giocatori...</string>
@@ -25,4 +25,9 @@
     <string name="msgFinePartite">Uno o più giocatori non vuole continuare una nuova partita..\n
         Torna alla schermata principale per attendere altri giocatori</string>
     <string name="preference_file_key">com.example.provasfollo.PREFERENCE_FILE_KEY</string>
+    <string name="none">none</string>
+    <string name="asta">asta</string>
+    <string name="primoTurno">primoTurno</string>
+    <string name="sceltaSceme">sceltaSeme</string>
+    <string name="turni">turni</string>
 </resources>

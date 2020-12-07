@@ -129,6 +129,8 @@ public class GiocatoreController implements IGiocatore, IRemoteCallable
         return giocatore.getCartaGiocata();
     }
 
+
+
     public void incrementaPunteggio(int puntiIncremento)
     {
         giocatore.incrementaPunteggio(puntiIncremento);
@@ -251,6 +253,10 @@ public class GiocatoreController implements IGiocatore, IRemoteCallable
     public void reset()
     {
         giocatore.reset();
+    }
+
+    public void setPunteggio(int punteggio){
+        giocatore.setPunteggio(punteggio);
     }
 
     public boolean vuoleIniziareNuovaPartita()

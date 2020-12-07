@@ -35,6 +35,8 @@ public interface IGiocatore extends IJsonType
 
     int getPunteggio();
 
+    void setPunteggio(int punteggio);
+
     String getNome();
 
     void setNome(String nome);

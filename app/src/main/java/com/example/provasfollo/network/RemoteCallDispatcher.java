@@ -114,6 +114,41 @@ public class RemoteCallDispatcher implements Runnable {
     }
 
 
+    public String read() throws Exception {
+
+        class MyRunnable implements  Runnable{
+            String receivedMsg = "";
+            public String getReceivedMsg(){
+                return receivedMsg;
+            }
+
+            @Override
+            public void run(){
+                try{
+                    receivedMsg = mBufferIn.readLine();
+                }
+                catch(Exception e) {
+                    Log.d(TAG, e.toString());
+                }
+            }
+        }
+        MyRunnable r = new MyRunnable();
+        Thread t = new Thread(r);
+        t.start();
+        try{
+            t.join();
+        }
+        catch(InterruptedException e){
+            Log.d(TAG,e.toString());
+        }
+
+        if(r.getReceivedMsg() == ""){
+            return null;
+        }
+        return r.getReceivedMsg();
+    }
+
+
     public void connectToServer() throws SocketTimeoutException, Exception {
 
         try{
@@ -178,15 +213,6 @@ public class RemoteCallDispatcher implements Runnable {
                         }
                     }
                 }
-
-//                // TODO: perchè serve un try qui? è già dentro
-//                try{
-//
-//                }
-//                catch(Exception e){
-//                    Log.d(TAG,"menate");
-//                    throw e;
-//                }
 
                 dispatchROC(mServerMessage);
 

@@ -19,7 +19,8 @@ public class VistaGiocatore
     public VistaGiocatore(VistaCarta vistaCarta, TextView lblNomeGiocatore)
     {
         this.vistaCarta = vistaCarta;
-
+        this.ID_giocatore = -1;
+        this.nome = "";
         this.lblNomeGiocatore = lblNomeGiocatore;
 
         // TODO

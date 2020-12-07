@@ -3,6 +3,7 @@ package com.example.provasfollo.view;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +17,12 @@ import android.widget.TextView;
 import java.util.Arrays;
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import android.text.InputFilter;
 import android.widget.AdapterView;
 import android.view.Window;
@@ -33,6 +39,10 @@ import com.example.provasfollo.model.Giocatore;
 import com.example.provasfollo.utility.MsgBoxClickListenerWithNotify;
 import com.example.provasfollo.utility.MsgBoxOkCancel;
 import com.example.provasfollo.utility.MsgBoxWithWaitOnUIThread;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -115,6 +125,27 @@ public class PartitaActivity extends AppCompatActivity {
 
     private Handler handler;
 
+    // TODO: spostare in statoGiocoController
+    private String semeCartaChiamataFineAsta = null;
+    private int indiceCartaChiamataFineAsta = -1;
+    private int minPunteggioVittoria = -1;
+    private int faseGioco = -1;
+
+    private int ID_chiamante = -1;
+    private int ID_socio = -1;
+
+    private int ID_giocatoreGiocante = -1;
+
+
+    private final String RICHIESTA_STATO = "GET_STATUS";
+    private final String ACK_STATO = "ACK_STATUS";
+
+
+    private int contResume = 0;
+    private final static String[] FASI_GIOCO = {"none", "asta", "primoTurno", "sceltaSeme", "turni"};
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -151,9 +182,9 @@ public class PartitaActivity extends AppCompatActivity {
         serverListener.addOggettoRemoto(statoController.NOME_CLASSE, statoController);
 
 
-        // eseguo in bg
+/*        // eseguo in bg
         Thread t = new Thread(serverListener);
-        t.start();
+        t.start();*/
 
 
         // imposto i riferimenti agli oggetti grafici della activity
@@ -174,13 +205,186 @@ public class PartitaActivity extends AppCompatActivity {
 
         handler = new Handler(this.getMainLooper());
 
+        // eseguo in bg
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getStatoDalServer();
+            }
+        });
+        t.start();
     }
+
+
+
+    private void getStatoDalServer() {
+
+        serverListener.sendMessage(RICHIESTA_STATO);
+        String json = null;
+        try{
+            json = serverListener.read();
+        }
+        catch(Exception e){
+            Log.d(TAG,e.toString());
+        }
+
+        if(json.contains("{")){
+            String statoJson = json.substring(json.indexOf("{"));
+
+            JsonElement jsonElement = new JsonParser().parse(statoJson);
+            JsonObject jsonStato = jsonElement.getAsJsonObject();
+
+            // scopro in quale fase del gioco siamo
+            String faseGioco = jsonStato.get("faseGioco").getAsString();
+            ID_giocatoreLocale = jsonStato.get("ID_giocatoreLocale").getAsInt();
+
+            // ottengo i dati dei giocatori
+            JsonArray giocatoriJsonElements = jsonStato.get("giocatori").getAsJsonArray();
+            int numGiocatori = giocatoriJsonElements.size();
+
+            // per ogni giocatore salvo l'eventuale carta giocata (se siamo oltre la fase dell'asta)
+            Map<Integer, Carta> mapCartaGiocatore = new HashMap<Integer, Carta>();
+
+            for(int i = 0; i < numGiocatori; i++){
+                JsonObject jsonGiocatore = giocatoriJsonElements.get(i).getAsJsonObject();
+
+                // ottengo i dati di questo giocatore
+                int ID_giocatore = jsonGiocatore.get("ID").getAsInt();
+                String nomeGiocatore = jsonGiocatore.get("nome").getAsString();
+
+                // se è già finita l'asta devo segnare l'eventuale carta giocata da questo giocatore
+                if(!(faseGioco.equalsIgnoreCase(getString(R.string.none)) ||
+                        faseGioco.equalsIgnoreCase(getString(R.string.asta)))){
+
+                    Carta cartaGiocatore = new Carta();
+
+                    String cartaJson = jsonGiocatore.get("carta").toString();
+                    if(!cartaJson.equalsIgnoreCase("\"none\"")){
+                        cartaGiocatore.populateObjectFromJson(cartaJson);
+                        mapCartaGiocatore.put(ID_giocatore, cartaGiocatore);
+                    }
+                }
+
+                aggiungiGiocatore(ID_giocatore, nomeGiocatore);
+            }
+
+            // ottengo le carte della mano del giocatore locale
+            JsonArray carteGiocatoreCorrente = jsonStato.get("carteGiocatoreCorrente").getAsJsonArray();
+            int numCarteGiocatoreCorrente = carteGiocatoreCorrente.size();
+            for(int i = 0; i < numCarteGiocatoreCorrente; i++){
+                Carta c = new Carta();
+                c.populateObjectFromJson(carteGiocatoreCorrente.get(i).toString());
+                giocatoreController.aggiungiCartaMano(c);
+            }
+
+            // se è finita l'asta devo impostare il gicoatore chiamante
+            if(!(faseGioco.equalsIgnoreCase(getString(R.string.none)) ||
+                    faseGioco.equalsIgnoreCase(getString(R.string.asta)))){
+                ID_chiamante = jsonStato.get("ID_chiamante").getAsInt();
+            }
+
+            // se è iniziato il 2o turno allora è stato scelto anche il seme e il socio
+            if(faseGioco.equalsIgnoreCase(getString(R.string.turni))){
+                semeCartaChiamataFineAsta = jsonStato.get("semeChiamata").getAsString();
+                ID_socio = jsonStato.get("ID_socio").getAsInt();
+
+                giocatoreController.setSemeBriscola(semeCartaChiamataFineAsta);
+                setPanelBriscola(semeCartaChiamataFineAsta);
+            }
+
+            ID_giocatoreGiocante = jsonStato.get("ID_giocatoreCheStaGiocando").getAsInt();
+
+            indiceCartaChiamata = jsonStato.get("indiceCartaChiamata").getAsInt();
+
+            int punteggioGiocatore = jsonStato.get("punteggio").getAsInt();
+            giocatoreController.setPunteggio(punteggioGiocatore);
+
+            minPunteggioVittoria = jsonStato.get("punteggioMinVittoria").getAsInt();
+
+            // se siamo nell'asta
+            if(faseGioco.equalsIgnoreCase(getString(R.string.asta))){
+
+                // mostro il pannello dell'asta e imposto l'ultima carta/punteggio chiamati
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pannelloChiamata.setVisibility(View.VISIBLE);
+                        pannelloTavolo.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+                int ID_precedenteGiocatoreChiamata = jsonStato.get("ID_precedenteGiocatoreChiamata").getAsInt();
+                updateCartaChiamata(ID_precedenteGiocatoreChiamata, indiceCartaChiamata, minPunteggioVittoria);
+
+
+            }else if(faseGioco.equalsIgnoreCase(getString(R.string.primoTurno)) ||
+                    faseGioco.equalsIgnoreCase(getString(R.string.turni))){
+
+                indiceCartaChiamataFineAsta = indiceCartaChiamata;
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pannelloChiamata.setVisibility(View.INVISIBLE);
+                        pannelloTavolo.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+                for(Integer key : mapCartaGiocatore.keySet()){
+                    aggiungiCartaGiocataDaGiocatore(key, mapCartaGiocatore.get(key));
+                }
+                updateGiocatoreStaGiocando(ID_giocatoreGiocante);
+
+                String nomeChiamante = "";
+                String nomeSocio = "";
+
+                for(VistaGiocatore vg : visteGiocatori){
+                    if(vg.getIDGiocatore() == ID_chiamante){
+                        nomeChiamante = vg.getNomeGiocatore();
+                    }
+
+                    if(faseGioco.equalsIgnoreCase(getString(R.string.turni))){
+                        if(vg.getIDGiocatore() == ID_socio){
+                            nomeSocio = vg.getNomeGiocatore();
+                        }
+                    }
+                }
+
+                String msgTemp = "chiamante: " + nomeChiamante + "\n" +
+                            "carta chiamata: " + SCALA_CARTE_ASTA[indiceCartaChiamataFineAsta] + "\n" +
+                            "punteggio min. vittoria: " + String.valueOf(minPunteggioVittoria) + "\n";
+
+                if(faseGioco.equalsIgnoreCase(getString(R.string.turni))){
+                    msgTemp += "seme carta chiamata: " + semeCartaChiamataFineAsta + "\n";
+                }
+
+                final String msg = msgTemp;
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MsgBoxOkCancel msgBox = new MsgBoxOkCancel(msg, getString(R.string.msgOk));
+                        msgBox.show(getSupportFragmentManager(),TAG);
+                    }
+                });
+
+            }
+
+        }
+        serverListener.sendMessage(ACK_STATO);
+
+        Thread t = new Thread(serverListener);
+        t.start();
+
+    }
+
 
     @Override
     protected void onResume(){
         super.onResume();
 
         Log.d(TAG, "sono nel resume!");
+
+
 
     }
 
@@ -408,19 +612,6 @@ public class PartitaActivity extends AppCompatActivity {
 
     private void abilitaPannelloChiamata()
     {
-        /*btnLascia.post(new Runnable() {
-            @Override
-            public void run() {
-                btnLascia.setText("PORCO DIO");
-            }
-        });
-
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnLascia.setBackgroundColor(Color.CYAN);
-            }
-        });*/
 
         boolean res = handler.post(new Runnable() {
             @Override
@@ -472,6 +663,7 @@ public class PartitaActivity extends AppCompatActivity {
                 MyGraphicsUtility.addItemsSpinner(comboSemeChiamata, Arrays.asList(Carta.SEMI), partitaActivity);
                 comboSemeChiamata.setSelection(0);
                 panelSeme.setVisibility(View.VISIBLE);
+                panelSeme.bringToFront();
 
             }
         });
@@ -499,8 +691,6 @@ public class PartitaActivity extends AppCompatActivity {
             public void run() {
                 int indiceSlotTavolo = MathUtility.mod(ID_giocatore - ID_giocatoreLocale, NUM_MAX_CARTE_TAVOLO);
                 visteGiocatori[indiceSlotTavolo].setDatiGiocatore(ID_giocatore, nomeGiocatore);
-
-
             }
         });
 
@@ -559,6 +749,7 @@ public class PartitaActivity extends AppCompatActivity {
         });
 
     }
+
 
     public void updateFineChiamate(final int ID_giocatoreChiamante, final int indiceCarta, final int punteggioVittoria)
     {
@@ -648,40 +839,6 @@ public class PartitaActivity extends AppCompatActivity {
 
     public boolean vuoiGiocareNuovaPartita()
     {
-/*        class MyRunnable implements Runnable, IMsgBoxResponseCollector {
-
-            private int response = -1; // -1 = None, 0 = no, 1 = sì
-
-            public void setResponseReceived(int response){
-                this.response = response;
-            }
-
-            @Override
-            public void run(){
-                MsgBoxOkCancel msgBox = new MsgBoxOkCancel(getString(R.string.msgGiocaAncora), getString(R.string.si), getString(R.string.no),
-                        new MsgBoxClickListenerWithNotify(this, 1),
-                        new MsgBoxClickListenerWithNotify(this, 0)
-                );
-
-                msgBox.show(getSupportFragmentManager(), TAG);
-            }
-
-            public int getResponse(){
-                return response;
-            }
-        }
-
-        MyRunnable r = new MyRunnable();
-        synchronized (r){
-            this.runOnUiThread(r);
-            try{
-                r.wait();
-            }
-            catch(InterruptedException e){
-                Log.d(TAG,e.toString());
-            }
-        }*/
-
         MsgBoxWithWaitOnUIThread msgBox = new MsgBoxWithWaitOnUIThread(getString(R.string.msgGiocaAncora),
                 getString(R.string.si), getString(R.string.no), this);
         msgBox.showAndWait();

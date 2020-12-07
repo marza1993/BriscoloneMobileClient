@@ -20,9 +20,15 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.example.provasfollo.R;
+import com.example.provasfollo.model.Carta;
+import com.example.provasfollo.model.Giocatore;
 import com.example.provasfollo.network.RemoteCallDispatcher;
 import com.example.provasfollo.utility.ConfigReaderWriter;
 import com.example.provasfollo.utility.MsgBoxOkCancel;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -67,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
         stato = 1;
         // menate
+
     }
+
 
     @Override
     protected void onResume(){

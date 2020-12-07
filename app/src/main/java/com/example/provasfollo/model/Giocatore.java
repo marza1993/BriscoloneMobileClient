@@ -92,9 +92,11 @@ public class Giocatore
         }
 
         // carta giocata
-        if (giocata.getSeme().equalsIgnoreCase(seme))
-        {
-            giocata.setSemeBriscola();
+        if(giocata!=null){
+            if (giocata.getSeme().equalsIgnoreCase(seme))
+            {
+                giocata.setSemeBriscola();
+            }
         }
     }
 
@@ -115,12 +117,15 @@ public class Giocatore
             }
         }
 
-        // controllo quella in tavola
-        if (giocata.getNome().equalsIgnoreCase(Carta.SCALA_CARTE_ASTA[indiceCartaChiamata]) &&
-                giocata.getSeme().equalsIgnoreCase(seme))
-        {
-            isSocio = true;
+        if(giocata != null){
+            // controllo quella in tavola
+            if (giocata.getNome().equalsIgnoreCase(Carta.SCALA_CARTE_ASTA[indiceCartaChiamata]) &&
+                    giocata.getSeme().equalsIgnoreCase(seme))
+            {
+                isSocio = true;
+            }
         }
+
 
         return isSocio;
     }
@@ -149,6 +154,10 @@ public class Giocatore
     public int getPunteggio()
     {
         return punteggio;
+    }
+
+    public void setPunteggio(int punteggio){
+        this.punteggio = punteggio;
     }
 
     public String getNome()
