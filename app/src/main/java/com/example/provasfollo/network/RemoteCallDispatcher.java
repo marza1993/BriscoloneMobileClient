@@ -142,7 +142,7 @@ public class RemoteCallDispatcher implements Runnable {
             Log.d(TAG,e.toString());
         }
 
-        if(r.getReceivedMsg() == ""){
+        if(r.getReceivedMsg().equalsIgnoreCase("") || r.getReceivedMsg().equalsIgnoreCase(PING_MSG)){
             return null;
         }
         return r.getReceivedMsg();

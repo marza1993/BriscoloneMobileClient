@@ -210,6 +210,17 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
         view.updateContinuaPartiteSiNo(continua);
     }
 
+    public void updateGiocatoriMancantiInizioPartita(int numGiocMancanti)
+    {
+        view.updateGiocatoriMancantiInizioPartita(numGiocMancanti);
+    }
+
+    public void updateGiocatoriMancantiInizioPartita(RemoteObject[] parametri)
+    {
+        int numGiocMancanti = Integer.parseInt((String)((TipoSempliceROC)parametri[0].getValori()[0]).getVal());
+        updateGiocatoriMancantiInizioPartita(numGiocMancanti);
+    }
+
 
     public RemoteObject invokeMethodByName(String nomeMetodo, RemoteObject[] parametri)
     {
@@ -278,6 +289,11 @@ public class StatoGiocoController implements IStatoGioco, IRemoteCallable
             case "updateContinuaPartite":
 
                 updateContinuaPartiteSiNo(parametri);
+                return null;
+
+            case "updateGiocatoriMancantiInizioPartita":
+
+                updateGiocatoriMancantiInizioPartita(parametri);
                 return null;
 
             default:

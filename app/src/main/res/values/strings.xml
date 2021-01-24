@@ -13,8 +13,8 @@
     <string name="btnSceltaSeme">Conferma seme</string>
     <string name="btnEffettuaChiamata">Chiama!</string>
 <!--    <string name="IP">192.168.1.100</string>-->
-<!--    <string name="IP">marza1993.ddns.net</string>-->
-    <string name="IP">10.227.220.255</string>
+    <string name="IP">marza1993.ddns.net</string>
+<!--    <string name="IP">10.227.220.255</string>-->
     <string name="erroreConnessione">Impossibile connettersi al server!</string>
     <string name="msgOk">ok</string>
     <string name="erroreGiocatoreSconnesso">Uno o più giocatori si sono sconnessi! Attesa rientro giocatori...</string>

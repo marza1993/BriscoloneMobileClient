@@ -221,13 +221,19 @@ public class PartitaActivity extends AppCompatActivity {
 
         serverListener.sendMessage(RICHIESTA_STATO);
         String json = null;
-        try{
-            json = serverListener.read();
-        }
-        catch(Exception e){
-            Log.d(TAG,e.toString());
+
+        // nel frattempo sta già ricevendo i ping dal server.. In questo caso il metodo .read()
+        // restituisce null
+        while(json == null){
+            try{
+                json = serverListener.read();
+            }
+            catch(Exception e){
+                Log.d(TAG,e.toString());
+            }
         }
 
+        // faccio il parsing del json con lo stato corrente della partita
         if(json.contains("{")){
             String statoJson = json.substring(json.indexOf("{"));
 
@@ -314,7 +320,10 @@ public class PartitaActivity extends AppCompatActivity {
                 });
 
                 int ID_precedenteGiocatoreChiamata = jsonStato.get("ID_precedenteGiocatoreChiamata").getAsInt();
-                updateCartaChiamata(ID_precedenteGiocatoreChiamata, indiceCartaChiamata, minPunteggioVittoria);
+                if(indiceCartaChiamata != -1){
+                    updateCartaChiamata(ID_precedenteGiocatoreChiamata, indiceCartaChiamata, minPunteggioVittoria);
+                }
+
 
 
             }else if(faseGioco.equalsIgnoreCase(getString(R.string.primoTurno)) ||
@@ -1023,6 +1032,19 @@ public class PartitaActivity extends AppCompatActivity {
                         txtStatoTurno.bringToFront();
                     }
                 }
+            }
+        });
+    }
+
+
+
+    public void updateGiocatoriMancantiInizioPartita(final int numGiocMancanti)
+    {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                txtStatoTurno.setText("In attesa di " + numGiocMancanti + " giocatori per iniziare la partita...");
             }
         });
     }
